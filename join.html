@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Join Instructions</title>
+    <style>
+        body {
+            min-height: 100vh;
+            font-family: 'Mukta Malar', Arial;
+            color: #470a68;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            background-color: #562794;
+            animation: fadebg 5s linear 0s infinite alternate-reverse both;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+        }
+
+        @keyframes fadebg {
+            from {
+                background-color: #561085;
+            }
+
+            to {
+                background-color: #721be2;
+            }
+        }
+
+        @keyframes rotateSideToSide {
+            0% {
+                transform: rotate(1deg);
+            }
+
+            25% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(-1deg);
+            }
+
+            75% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(1deg);
+            }
+        }
+
+        @keyframes floating {
+            0% {
+                transform: translateX(0px) translateY(0px) rotate(1deg);
+            }
+
+            25% {
+                transform: translateX(0px) translateY(-10px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateX(0px) translateY(0px) rotate(-1deg);
+            }
+
+            75% {
+                transform: translateX(0px) translateY(10px) rotate(0deg);
+            }
+
+            100% {
+                transform: translateX(0px) translateY(0px) rotate(1deg);
+            }
+        }
+
+        @keyframes noPadding {
+            from {
+                padding: 0px 25px;
+            }
+
+            to {
+                padding: 0px 0px;
+            }
+        }
+
+        @keyframes noWidth {
+            from {
+                width: 250px;
+            }
+
+            to {
+                width: 0px;
+            }
+        }
+
+        @keyframes noHeight {
+            from {
+                height: 250px;
+            }
+
+            to {
+                height: 0px;
+            }
+        }
+
+        @keyframes reAddHeight {
+            from {
+                height: 0px;
+            }
+
+            to {
+                height: 250px;
+            }
+        }
+
+        h1 {
+            border: 2px solid #470a68;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #8870c1;
+            color: #470a68;
+            animation: rotateSideToSide 5s linear 0s infinite;
+            transition: scale 0.5s, opacity 0.5s;
+        }
+
+        div {
+            transition: scale 0.5s;
+        }
+
+        img {
+            border-radius: 20px;
+            transition: scale 0.5s;
+        }
+
+        .noPadding {
+            animation: noPadding 0.5s linear 0s 1 both;
+        }
+
+        .noWidth {
+            animation: noWidth 0.5s linear 0s 1 both;
+        }
+
+        .noHeight {
+            animation: noHeight 0.5s linear 0s 1 both;
+        }
+
+        .reAddHeight {
+            animation: reAddHeight 0.5s linear 0s 1 both;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="main" style="font-size: 95px; margin: 0; animation: floating 5s linear 0s infinite">Spyfall! To join:</h1>
+    <div style="display: flex; flex-direction:row; align-items:center">
+        <h1 id="instr1" style="font-size: 95px; color:#6f00ff;">1: Connect to Wi-Fi<br>(Scan QR)</h1>
+        <p id="invis1" style="padding: 0px 25px;"></p>
+        <img id="img1" src="/wifi.png" width="250" height="250">
+    </div>
+    <div id="div2" style="display: flex; flex-direction:row-reverse; align-items: center; height: 250px">
+        <h1 id="instr2" style="font-size: 95px; color:#6f00ff;">2: http://zserver.local</h1>
+        <p id="invis2" style="padding: 0px 25px;"></p>
+        <img id="img2" src="/web.png" width="250" height="250">
+    </div>
+    <script>
+        var eventSource = new EventSource("/api/stream");
+        var mode = 0
+        var loc = ""
+        var spy = ""
+        eventSource.onmessage = function (event) {
+            var main = document.getElementById("main");
+            var instr1 = document.getElementById("instr1");
+            var instr2 = document.getElementById("instr2");
+            var invis1 = document.getElementById("invis1");
+            var invis2 = document.getElementById("invis2");
+            var img1 = document.getElementById("img1");
+            var img2 = document.getElementById("img2");
+            var div2 = document.getElementById("div2");
+            if (event.data == "start") {
+                if (mode == 0) {
+                    mode = 1;
+                    img1.style.scale = 0;
+                    img2.style.scale = 0;
+                    setTimeout(function () {
+                        invis1.classList.add("noPadding");
+                        invis2.classList.add("noPadding");
+                        img1.classList.add("noWidth");
+                        img2.classList.add("noWidth");
+                    }, 500);
+                    setTimeout(function () {
+                        instr1.style.opacity = 0;
+                        instr2.style.opacity = 0;
+                    }, 1000);
+                    setTimeout(function () {
+                        instr1.innerHTML = "Game started!";
+                        instr2.innerHTML = "Enter a location";
+                        instr1.style.opacity = 100;
+                        instr2.style.opacity = 100;
+                    }, 1500);
+                    main.innerHTML = "Spyfall!";
+                }
+            } else if (event.data.startsWith("vote/")) {
+                if (mode == 2) {
+                    mode = 3;
+                    url = event.data.substring(5);
+                    starter = url.split("/")[0];
+                    voted = url.split("/")[1];
+                    instr1.style.opacity = 0;
+                    main.style.opacity = 0;
+                    instr2.innerHTML = "Vote on: " + voted;
+                    setTimeout(function () {
+                        main.innerHTML = "Vote Started!";
+                        instr1.innerHTML = "Started by " + starter;
+                        instr1.style.opacity = 100;
+                        main.style.opacity = 100;
+                    }, 500);
+                    div2.classList.remove("noHeight")
+                    div2.classList.add("reAddHeight");
+                    setTimeout(function () {
+                        div2.style.scale = 1;
+                    }, 500)
+                }
+            } else if (event.data == "reset") {
+                main.innerHTML = "Game Over!";
+                instr1.innerHTML = "Location: " + loc;
+                instr2.innerHTML = "Spy: " + spy;
+                div2.classList.remove("noHeight")
+                div2.classList.add("reAddHeight");
+                setTimeout(function () {
+                    loc = "";
+                    spy = "";
+                    mode = 0;
+                    img1.hidden = false;
+                    img2.hidden = false;
+                    img1.style.scale = 1;
+                    img2.style.scale = 1;
+                    invis1.hidden = false;
+                    invis2.hidden = false;
+                    main.innerHTML = "Spyfall! To join:";
+                    instr1.innerHTML = "1: Connect to Wi-Fi<br>(Scan QR)";
+                    instr2.innerHTML = "2: http://zserver.local";
+                    div2.style.display = "flex";
+                    div2.style.scale = 1;
+                    invis1.classList.remove("noPadding");
+                    invis2.classList.remove("noPadding");
+                    img1.classList.remove("noWidth");
+                    img2.classList.remove("noWidth");
+                    div2.classList.remove("noHeight");
+                    div2.classList.remove("reAddHeight");
+                    div2.style.height = 100;
+                    instr1.style.opacity = 100;
+                    instr2.style.opacity = 100;
+                    main.style.opacity = 100;
+                }, 5000);
+            } else if (event.data == "return") {
+                mode = 2;
+                main.innerHTML = "Spyfall!";
+                instr1.innerHTML = "Game running!";
+                div2.style.scale = 0;
+                setTimeout(function () {
+                    div2.classList.remove("reAddHeight");
+                    div2.classList.add("noHeight");
+                }, 500);
+            } else {
+                if (mode == 1) {
+                    loc = event.data.split(",")[0];
+                    spy = event.data.split(",")[1];
+                    mode = 2;
+                    main.innerHTML = "Spyfall!";
+                    instr1.innerHTML = "Game running!";
+                    div2.style.scale = 0;
+                    setTimeout(function () {
+                        div2.classList.remove("reAddHeight");
+                        div2.classList.add("noHeight");
+                    }, 500);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
