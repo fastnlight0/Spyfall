@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Spyfall</title>
+    <style>
+        .activate {
+            display: table;
+            background: #5628EE;
+            box-shadow: 0 4px 20px rgba(86, 40, 238, 0.15);
+            line-height: 20px;
+            padding: 10px;
+            border-radius: 22px;
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease, opacity 1s;
+        }
+
+        .activate span {
+            display: inline-block;
+            vertical-align: top;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            margin: 0 4px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activate span:before {
+            content: '';
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: #5628EE;
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .activate span svg {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 50%;
+            top: 50%;
+            margin: -6px 0 0 -6px;
+            z-index: 1;
+        }
+
+        .activate span svg:nth-child(1) {
+            width: 20px;
+            height: 20px;
+            top: 0;
+            left: 0;
+            fill: none;
+            margin: 0;
+            stroke: #fff;
+            stroke-width: 1px;
+            stroke-dashoffset: 47.124 * 2;
+            stroke-dasharray: 47.124;
+        }
+
+        .activate span svg:nth-child(2) {
+            fill: #5628EE;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .activate span svg:nth-child(3) {
+            fill: #5628EE;
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        }
+
+        .activate:hover {
+            box-shadow: 0 8px 24px rgba(86, 40, 238, 0.15);
+        }
+
+        .activate:hover span svg:nth-child(2) {
+            transform: translateY(-20px);
+        }
+
+        .activate:hover span svg:nth-child(3) {
+            transform: translateY(0);
+        }
+
+        .activate:active {
+            transform: scale(0.94);
+            box-shadow: 0 4px 16px rgba(63, 220, 117, 0.18);
+        }
+
+        .activate.loading {
+            background: #5628EE;
+            box-shadow: 0 4px 20px rgba(86, 40, 238, 0.15);
+        }
+
+        .activate.loading span {
+            background: none;
+            transition: background 0.1s ease 0.3s;
+        }
+
+        .activate.loading span:before {
+            transform: scale(1);
+        }
+
+        .activate.loading span svg:nth-child(1) {
+            animation: turn 1.6s linear infinite forwards, path 1.6s linear infinite forwards;
+        }
+
+        .activate.loading span svg:nth-child(2) {
+            transform: translateY(-20px);
+        }
+
+        .activate.loading span svg:nth-child(3) {
+            opacity: 0;
+            transform: translateY(0) scale(0.6);
+        }
+
+        .activate.loading ul {
+            transform: rotateX(90deg);
+        }
+
+        .activate.loading.done {
+            background: #3FDC75;
+            box-shadow: 0 4px 20px rgba(63, 220, 117, 0.15);
+        }
+
+        .activate.loading.done span {
+            background: #fff;
+            transition: background 0.1s ease 0s;
+        }
+
+        .activate.loading.done span:before {
+            background: #3FDC75;
+            transform: scale(0);
+        }
+
+        .activate.loading.done span svg:nth-child(1) {
+            animation: none;
+        }
+
+        .activate.loading.done span svg:nth-child(3) {
+            fill: #3FDC75;
+            opacity: 1;
+            transform: scale(1);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s, opacity 0.4s ease 0.25s;
+        }
+
+        .activate.loading.done ul {
+            transform: rotateX(180deg);
+        }
+
+        .activate ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            height: 20px;
+            width: 70px;
+            display: inline-block;
+            vertical-align: top;
+            text-align: center;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .activate ul li {
+            --rotateX: 0deg;
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            transform-origin: 50% 50%;
+            transform: rotateX(var(--rotateX)) translateZ(10px);
+        }
+
+        .activate ul li:nth-child(2) {
+            --rotateX: -90deg;
+        }
+
+        .activate ul li:nth-child(3) {
+            --rotateX: -180deg;
+        }
+
+
+        @keyframes turn {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes path {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        html {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        * {
+            box-sizing: inherit;
+        }
+
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Mukta Malar', Arial;
+            color: #ADAFB6;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #info {
+            transition: opacity 0.5s;
+        }
+
+        @media screen and (max-width: 1000px) {
+            html {
+                zoom: 3;
+                overflow: hidden;
+            }
+
+            #info {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Spyfall</h1>
+    <br>
+    <p id="info">Enter your name below</p>
+    <br>
+    <input type="text" id="name" placeholder="Name" maxlength="15">
+    <select id="dropdown" hidden></select>
+    <br>
+    <br>
+    <div class="button">
+        <a id="activate" class="activate scaleup">
+            <span>
+                <svg>
+                    <use xlink:href="#circle">
+                </svg>
+                <svg>
+                    <use xlink:href="#arrow">
+                </svg>
+                <svg>
+                    <use xlink:href="#check">
+                </svg>
+            </span>
+            <ul>
+                <li id="j1">Join</li>
+                <li id="j2">Joining</li>
+                <li id="j3">Joined</li>
+            </ul>
+        </a>
+
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;" class="symbol">
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="circle">
+                <circle cx="8" cy="8" r="7.5"></circle>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" id="arrow">
+                <path
+                    d="M2.7008908,5.37931459 L2.7008908,5.37931459 C2.9224607,5.60207651 3.2826628,5.60304283 3.50542472,5.38147293 C3.52232305,5.36466502 3.53814843,5.34681177 3.55280728,5.32801875 L5.34805194,3.02646954 L5.34805194,10.3480519 C5.34805194,10.7081129 5.63993903,11 6,11 L6,11 C6.36006097,11 6.65194806,10.7081129 6.65194806,10.3480519 L6.65194806,3.02646954 L8.44719272,5.32801875 C8.6404327,5.57575732 8.99791646,5.61993715 9.24565503,5.42669716 C9.26444805,5.41203831 9.28230129,5.39621293 9.2991092,5.37931459 L9.2991092,5.37931459 C9.55605877,5.12098268 9.57132199,4.70855346 9.33416991,4.43193577 L6.75918715,1.42843795 C6.39972025,1.00915046 5.76841509,0.960656296 5.34912761,1.32012319 C5.31030645,1.35340566 5.27409532,1.38961679 5.24081285,1.42843795 L2.66583009,4.43193577 C2.42867801,4.70855346 2.44394123,5.12098268 2.7008908,5.37931459 Z">
+                </path>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" id="check">
+                <path id="test"
+                    d="M4.76499011,6.7673683 L8.2641848,3.26100386 C8.61147835,2.91299871 9.15190114,2.91299871 9.49919469,3.26100386 C9.51164115,3.27347582 9.52370806,3.28637357 9.53537662,3.29967699 C9.83511755,3.64141434 9.81891834,4.17816549 9.49919469,4.49854425 L5.18121271,8.82537365 C4.94885368,9.05820878 4.58112654,9.05820878 4.34876751,8.82537365 L2.50080531,6.97362503 C2.48835885,6.96115307 2.47629194,6.94825532 2.46462338,6.93495189 C2.16488245,6.59321455 2.18108166,6.0564634 2.50080531,5.73608464 C2.84809886,5.3880795 3.38852165,5.3880795 3.7358152,5.73608464 L4.76499011,6.7673683 Z">
+                </path>
+            </symbol>
+        </svg>
+    </div>
+    <br>
+    <div class="vote" hidden>
+        <a id="vote" class="activate scaleup" style="opacity: 0;">
+            <span>
+                <svg>
+                    <use xlink:href="#circle">
+                </svg>
+                <svg>
+                    <use xlink:href="#arrow">
+                </svg>
+                <svg>
+                    <use xlink:href="#check">
+                </svg>
+            </span>
+            <ul>
+                <li id="v1">Vote</li>
+                <li>Voting</li>
+                <li>Voted</li>
+            </ul>
+        </a>
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;" class="symbol">
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="circle">
+                <circle cx="8" cy="8" r="7.5"></circle>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" id="arrow">
+                <path
+                    d="M2.7008908,5.37931459 L2.7008908,5.37931459 C2.9224607,5.60207651 3.2826628,5.60304283 3.50542472,5.38147293 C3.52232305,5.36466502 3.53814843,5.34681177 3.55280728,5.32801875 L5.34805194,3.02646954 L5.34805194,10.3480519 C5.34805194,10.7081129 5.63993903,11 6,11 L6,11 C6.36006097,11 6.65194806,10.7081129 6.65194806,10.3480519 L6.65194806,3.02646954 L8.44719272,5.32801875 C8.6404327,5.57575732 8.99791646,5.61993715 9.24565503,5.42669716 C9.26444805,5.41203831 9.28230129,5.39621293 9.2991092,5.37931459 L9.2991092,5.37931459 C9.55605877,5.12098268 9.57132199,4.70855346 9.33416991,4.43193577 L6.75918715,1.42843795 C6.39972025,1.00915046 5.76841509,0.960656296 5.34912761,1.32012319 C5.31030645,1.35340566 5.27409532,1.38961679 5.24081285,1.42843795 L2.66583009,4.43193577 C2.42867801,4.70855346 2.44394123,5.12098268 2.7008908,5.37931459 Z">
+                </path>
+            </symbol>
+            <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" id="check">
+                <path id="test"
+                    d="M4.76499011,6.7673683 L8.2641848,3.26100386 C8.61147835,2.91299871 9.15190114,2.91299871 9.49919469,3.26100386 C9.51164115,3.27347582 9.52370806,3.28637357 9.53537662,3.29967699 C9.83511755,3.64141434 9.81891834,4.17816549 9.49919469,4.49854425 L5.18121271,8.82537365 C4.94885368,9.05820878 4.58112654,9.05820878 4.34876751,8.82537365 L2.50080531,6.97362503 C2.48835885,6.96115307 2.47629194,6.94825532 2.46462338,6.93495189 C2.16488245,6.59321455 2.18108166,6.0564634 2.50080531,5.73608464 C2.84809886,5.3880795 3.38852165,5.3880795 3.7358152,5.73608464 L4.76499011,6.7673683 Z">
+                </path>
+            </symbol>
+        </svg>
+    </div>
+
+    <script>
+        window.onbeforeunload = function () {
+            return "Are you sure you want to leave?";
+        }
+        var activate = document.getElementById("activate");
+        activate.addEventListener('click', function (e) {
+            var self = this;
+            if (!self.classList.contains('loading')) {
+                self.classList.add('loading');
+                click();
+            }
+        });
+        var vote = document.getElementById("vote");
+        vote.addEventListener('click', function (e) {
+            var self = this;
+            if (!self.classList.contains('loading')) {
+                self.classList.add('loading');
+                startVote();
+            }
+        });
+    </script>
+    <script>
+        var mode = 0;
+        var pname = ""
+        let check = false
+        let theLocation = ""
+        let spy = ""
+        let players = []
+        document.getElementById("name").addEventListener("keyup", e => {
+            if (e.keyCode == 13) {
+                if (!activate.classList.contains('loading')) {
+                    activate.classList.add('loading');
+                    click();
+                }
+            }
+        })
+        function click() {
+            mode = mode == 5 ? 0 : mode
+            var name = document.getElementById("name");
+            var info = document.getElementById("info");
+            var j1 = document.getElementById("j1");
+            var j2 = document.getElementById("j2");
+            var j3 = document.getElementById("j3");
+            var dropdown = document.getElementById("dropdown");
+            var eventSource = new EventSource(`/api/stream/`);
+            if (mode == 0) {
+                if (name.value == "" || name.value.includes(",")) {
+                    activate.classList.add("done")
+                    activate.classList.remove("loading", "done")
+                } else {
+                    pname = name.value;
+                    name.hidden = true;
+                    fetch(`/api/join/${name.value}`).then(blob => blob.text()).then(data => {
+                        if (data == "Taken") {
+                            activate.classList.add("done")
+                            activate.classList.remove("loading", "done")
+                            info.innerHTML = "Name Taken"
+                            setTimeout(() => {
+                                info.innerHTML = "Enter your name below"
+                                name.hidden = false
+                            }, 2000);
+                        } else if (data == "Invalid") {
+                            activate.classList.add("done")
+                            activate.classList.remove("loading", "done")
+                            info.innerHTML = "This name contains characters that will cause issues with the game. Examples of these characters are slashes (/) and commas (,)."
+                            setTimeout(() => {
+                                info.innerHTML = "Enter your name below"
+                                name.hidden = false
+                            }, 5000);
+                        } else if (data == "Started") {
+                            activate.classList.add("done")
+                            activate.classList.remove("loading", "done")
+                            info.innerHTML = "Game already started"
+                            setTimeout(() => {
+                                info.innerHTML = "Enter your name below"
+                                name.hidden = false
+                            }, 2000);
+                        } else if (data == "Game") {
+                            mode = 2;
+                            info.innerHTML = "Game started! Select a location:";
+                            name.placeholder = "Location";
+                            name.maxLength = 30;
+                            name.value = ""
+                            name.hidden = false;
+                            j1.innerHTML = "Submit"
+                            j2.innerHTML = "Submitting"
+                            j3.innerHTML = "Submitted"
+                            activate.classList.remove('loading', 'done');
+                            eventSource.close()
+                        } else {
+                            activate.classList.add('done')
+                            setTimeout(function () {
+                                j1.innerHTML = "Start"
+                                j2.innerHTML = "Starting"
+                                activate.classList.remove('loading', 'done');
+                            }, 1600)
+                            setTimeout(function () {
+                                j3.innerHTML = "Started"
+                            }, 2000);
+                            eventSource.addEventListener("message", function (event) {
+                                if (event.data == "start") {
+                                    mode = 2
+                                    info.innerHTML = "Game started! Select a location:";
+                                    name.placeholder = "Location";
+                                    name.maxLength = 30;
+                                    name.value = ""
+                                    name.hidden = false;
+                                    j1.innerHTML = "Submit"
+                                    j2.innerHTML = "Submitting"
+                                    j3.innerHTML = "Submitted"
+                                    activate.classList.remove('loading', 'done');
+                                    eventSource.close()
+                                } else {
+                                    info.innerHTML = "Waiting for players. Current players:<br>" + event.data;
+                                    if (event.data.includes(pname) == false) {
+                                        eventSource.close()
+                                        window.onbeforeunload = null;
+                                        window.location.href = "/"
+                                    }
+                                    mode = 1
+                                }
+                            });
+                        }
+                    });
+                }
+            } else if (mode == 1) {
+                fetch("/api/start/" + pname)
+            } else if (mode == 2) {
+                if (name.value == "") {
+                    activate.classList.add("done")
+                    activate.classList.remove("loading", "done")
+                } else {
+                    eventSource.close()
+                    name.hidden = true
+                    info.hidden = true
+                    fetch(`/api/loc/${name.value}`).then(blob => blob.text()).then(data => {
+                        info.innerHTML = "Waiting for other players..."
+                        activate.classList.add('done')
+                        setTimeout(function () {
+                            activate.style.opacity = 0;
+                            info.hidden = false
+                        }, 1600)
+                        setTimeout(function () {
+                            activate.classList.remove('loading', 'done');
+                            activate.hidden = true
+                        }, 2600);
+                        eventSource = new EventSource("api/stream/")
+                        eventSource.addEventListener("message", function (event) {
+                            if (event.data != "start" && check == false) {
+                                fetch("/api/check")
+                                check = true
+                                theLocation = event.data.split(",")[0]
+                                spy = event.data.split(",")[1]
+                                players = event.data.split(",")[2].split("/")
+                                info.hidden = true
+                                if (spy == pname) {
+                                    info.innerHTML = `You are the spy!`
+                                } else {
+                                    info.innerHTML = `The location is ${theLocation}.`
+                                }
+                                mode = 3
+                                activate.hidden = false
+                                document.getElementsByClassName("vote")[0].hidden = false
+                                activate.style.opacity = 100;
+                                vote.style.opacity = 100;
+                                j1.innerHTML = "Reveal"
+                                eventSource.close()
+                                info.style.opacity = 0;
+                                setTimeout(function () {
+                                    info.hidden = false
+                                }, 500)
+                                eventSource = new EventSource("api/stream/")
+                                eventSource.addEventListener("message", function (event) {
+                                    if (event.data == "reset") {
+                                        activate.style.opacity = 0;
+                                        eventSource.close()
+                                        info.innerHTML = "Game over. Location was " + theLocation + ", and the spy was " + spy + "."
+                                        info.style.opacity = 100;
+                                        setTimeout(function () {
+                                            window.onbeforeunload = null;
+                                            window.location.href = "/"
+                                        }, 5000)
+                                    } else if (event.data == "return") {
+                                        if (mode != 3) {
+                                            activate.classList.add('done')
+                                            vote.classList.add('done')
+                                            fetch("/api/check")
+                                            document.getElementById("v1").innerHTML = "Vote"
+                                            mode = 3
+                                            activate.classList.remove('loading', 'done');
+                                            activate.hidden = false
+                                            vote.hidden = false
+                                            info.style.opacity = 0;
+                                            j1.innerHTML = "Reveal"
+                                            vote.classList.remove("loading", "done")
+                                            activate.style.opacity = 100;
+                                            vote.style.opacity = 100;
+                                            dropdown.hidden = true
+                                            if (spy == pname) {
+                                                info.innerHTML = `You are the spy!`
+                                            } else {
+                                                info.innerHTML = `The location is ${theLocation}.`
+                                            }
+                                        }
+                                    } else if (event.data.startsWith("vote/")) {
+                                        if (mode != 6) {
+                                            let voteURL = event.data.substring(5)
+                                            let starter = voteURL.split("/")[0]
+                                            let vote = voteURL.split("/")[1]
+                                            if (starter != pname) {
+                                                mode = 6
+                                                dropdown.hidden = true
+                                                activate.hidden = false
+                                                vote.hidden = false
+                                                activate.style.opacity = 100;
+                                                vote.style.opacity = 100;
+                                                info.innerHTML = starter + " started a vote on " + vote + ". Is " + vote + " the spy?"
+                                                j1.innerHTML = "Yes"
+                                                j2.innerHTML = "Voting"
+                                                j3.innerHTML = "Voted"
+                                                document.getElementById("v1").innerHTML = "No"
+                                                info.style.opacity = 100;
+                                            }
+                                        }
+                                    }
+                                })
+                            }
+                        });
+                    });
+                }
+            } else if (mode == 3) {
+                activate.classList.add('done')
+                if (info.style.opacity == 0) {
+                    info.style.opacity = 100;
+                    j1.innerHTML = "Hide"
+                    activate.classList.remove('loading', 'done');
+                } else {
+                    info.style.opacity = 0;
+                    j1.innerHTML = "Reveal"
+                    activate.classList.remove('loading', 'done');
+                }
+            } else if (mode == 4) {
+                activate.classList.add('done')
+                mode = 3
+                activate.classList.remove('loading', 'done');
+                activate.hidden = false
+                vote.hidden = false
+                info.style.opacity = 0;
+                j1.innerHTML = "Reveal"
+                activate.classList.remove('loading', 'done');
+                dropdown.hidden = true
+                if (spy == pname) {
+                    info.innerHTML = `You are the spy!`
+                } else {
+                    info.innerHTML = `The location is ${theLocation}.`
+                }
+            } else if (mode == 6) {
+                fetch("/api/yes").then(blob => blob.text()).then(data => {
+                    info.innerHTML = "Waiting for players"
+                })
+                activate.classList.add('done')
+                activate.style.opacity = 0;
+                vote.style.opacity = 0
+                setTimeout(function () {
+                    activate.classList.remove('loading', 'done');
+                    activate.hidden = true
+                    vote.hidden = true
+                }, 1000)
+            }
+        };
+        function startVote() {
+            vote.classList.add('done')
+            vote.classList.remove('loading', 'done');
+            if (mode == 3) {
+                dropdown.innerHTML = "";
+                players.forEach(i => {
+                    if (i != pname) {
+                        dropdown.innerHTML += `<option value="${i}">${i}</option>`
+                    }
+                });
+                info.innerHTML = "Select a player to vote for:"
+                info.hidden = false
+                info.style.opacity = 100;
+                dropdown.hidden = false;
+                mode = 4
+                activate.hidden = false
+                activate.style.opacity = 100;
+                j1.innerHTML = "Cancel"
+            } else if (mode == 4) {
+                fetch("/api/vote/" + pname + "/" + dropdown.value).then(blob => blob.text()).then(data => {
+                    info.innerHTML = "Vote running..."
+                    dropdown.hidden = true
+                    vote.style.opacity = 0;
+                    activate.style.opacity = 0;
+                    setTimeout(function () {
+                        vote.hidden = true
+                        activate.hidden = true
+                    }, 1000)
+                })
+            } else if (mode == 6) {
+                fetch("/api/no").then(blob => blob.text()).then(data => {
+                    info.innerHTML = "Waiting for players"
+                })
+                activate.classList.add('done')
+                activate.style.opacity = 0;
+                vote.style.opacity = 0
+                setTimeout(function () {
+                    activate.classList.remove('loading', 'done');
+                    activate.hidden = true
+                    vote.hidden = true
+                }, 1000)
+            }
+        }
+    </script>
+</body>
+
+</html>
