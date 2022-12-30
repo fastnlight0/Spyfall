@@ -226,6 +226,11 @@
                 main.innerHTML = "Game Over!";
                 instr1.innerHTML = "Location: " + loc;
                 instr2.innerHTML = "Spy: " + spy;
+                div2.style.display = "flex";
+                div2.style.scale = 1;
+                div2.classList.remove("noHeight");
+                div2.classList.remove("reAddHeight");
+                div2.style.height = 100;
                 div2.classList.remove("noHeight")
                 div2.classList.add("reAddHeight");
                 setTimeout(function () {
