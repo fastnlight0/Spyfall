@@ -164,7 +164,7 @@ http.createServer(function (req, res) {
         } else if (url.startsWith("/yes")) {
             yes++
             res.writeHead(200, { "Content-Type": "text/plain" })
-            if (yes > Math.floor(players.length / 2) || no > Math.floor(players.length / 2) || yes + no == players.length) {
+            if (yes >= Math.ceil(players.length / 2) || no >= Math.ceil(players.length / 2) || yes + no == players.length) {
                 console.log("Vote complete")
                 process.stdout.write("> ")
                 if (yes > no) {
@@ -198,7 +198,7 @@ http.createServer(function (req, res) {
         } else if (url.startsWith("/no")) {
             no++
             res.writeHead(200, { "Content-Type": "text/plain" })
-            if (yes > Math.floor(players.length / 2) || no > Math.floor(players.length / 2) || yes + no == players.length) {
+            if (yes >= Math.ceil(players.length / 2) || no >= Math.ceil(players.length / 2) || yes + no == players.length) {
                 console.log("Vote complete")
                 process.stdout.write("> ")
                 if (yes > no) {
