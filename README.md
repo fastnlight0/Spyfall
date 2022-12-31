@@ -5,7 +5,7 @@ All you need is Node.JS. Simply run
 ```bash
 node app.js
 ```
-To start the app. Npm is not required, and no additional packages need to be installed.
+to start the app. Npm is not required, and no additional packages need to be installed.
 ## Connecting
 Connect to the website by entering the IP of the host followed by the port (`http://ip:port`). The default port is 80, and you don't need to specify the port if you keep it on 80.
 ## Playing
